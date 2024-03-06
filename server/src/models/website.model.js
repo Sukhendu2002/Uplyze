@@ -4,6 +4,7 @@ const websiteSchema = new mongoose.Schema({
   name: { type: String, required: true },
   url: { type: String, required: true },
   owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  active: { type: Boolean, default: true },
   monitoringSchedule: {
     frequency: { type: String, required: true },
     timeRange: {
@@ -21,6 +22,19 @@ const websiteSchema = new mongoose.Schema({
     alertThresholds: {
       responseTime: { type: Number },
       missingContent: { type: String },
+    },
+  },
+  notifications: {
+    email: { type: Boolean, default: true },
+    sms: {
+      type: Boolean,
+      default: false,
+      phoneNumber: { type: String },
+    },
+    slack: {
+      type: Boolean,
+      default: false,
+      webhookUrl: { type: String },
     },
   },
   monitoringHistory: [

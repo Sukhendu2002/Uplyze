@@ -41,12 +41,13 @@ const getWebsiteById = async (req, res) => {
 };
 
 const updateWebsite = async (req, res) => {
-  const { name, url, monitoringSchedule, monitoringSettings } = req.body;
+  const { name, url, active, monitoringSchedule, monitoringSettings } =
+    req.body;
 
   try {
     const website = await Website.findOneAndUpdate(
       { _id: req.params.id, owner: req.user },
-      { name, url, monitoringSchedule, monitoringSettings },
+      { name, url, active, monitoringSchedule, monitoringSettings },
       { new: true }
     );
     if (!website) return res.status(404).json({ error: "Website not found" });
