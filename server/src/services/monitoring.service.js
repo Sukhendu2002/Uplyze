@@ -2,6 +2,7 @@ require("dotenv").config({
   path: require("find-config")(".env"),
 });
 const cron = require("node-cron");
+const puppeteer = require("puppeteer");
 const Website = require("../models/website.model");
 const User = require("../models/user.model");
 const axios = require("axios");
@@ -36,6 +37,52 @@ const checkSslExpiration = async (website) => {
 const checkPerformance = async (website) => {
   // Implement performance monitoring logic
   return { responseTime: 500 };
+};
+
+// Function to perform synthetic monitoring
+const performSyntheticMonitoring = async (website) => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+
+  await page.goto(website.url, { waitUntil: "networkidle0" });
+
+  const issues = await page.evaluate(() => {
+    const issues = [];
+    const elements = document.querySelectorAll("img, script, link");
+
+    elements.forEach((element) => {
+      if (element.tagName === "IMG") {
+        if (!element.complete) {
+          issues.push(`Image ${element.src} did not load`);
+        }
+      } else if (element.tagName === "SCRIPT") {
+        if (!element.complete) {
+          issues.push(`Script ${element.src} did not load`);
+        }
+      } else if (element.tagName === "LINK") {
+        if (element.rel === "stylesheet" && !element.complete) {
+          issues.push(`Stylesheet ${element.href} did not load`);
+        }
+      }
+    });
+
+    return issues;
+  });
+
+  if (issues) {
+    console.log("Website has issues", issues);
+    // Send notifications
+
+    if (website.notifications.email) {
+      const user = await User.findById(website.owner);
+      const html = `Your website <strong>${
+        website.name
+      }</strong> has issues: ${issues.join(", ")}`;
+      sendEmailAlert(user.email, "Website Issues Alert", html);
+    }
+  }
+
+  await browser.close();
 };
 
 const monitorWebsites = async () => {
@@ -89,6 +136,10 @@ const monitorWebsites = async () => {
           // Send Slack notification
         }
       }
+    }
+
+    if (monitoringSettings.checks.syntheticMonitoring) {
+      await performSyntheticMonitoring(website);
     }
 
     // Save monitoring data to database

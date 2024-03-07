@@ -18,6 +18,7 @@ const websiteSchema = new mongoose.Schema({
       content: { type: Boolean, default: false },
       ssl: { type: Boolean, default: false },
       performance: { type: Boolean, default: false },
+      syntheticMonitoring: { type: Boolean, default: false },
     },
     alertThresholds: {
       responseTime: { type: Number },
