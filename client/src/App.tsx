@@ -30,7 +30,7 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
         </Route>
         <Route element={<PrivateRoutes />}>
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard" element={<Dashboard onLogout={logout} />} />
           <Route path="/profile" element={<div>Profile</div>} />
         </Route>
         <Route

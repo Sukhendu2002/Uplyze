@@ -13,7 +13,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +26,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { useNavigate } from "react-router-dom";
 
 type Site = {
   _id: string;
@@ -34,13 +34,16 @@ type Site = {
   url: string;
 };
 
-const Dashboard = () => {
+interface AuthNavProps {
+  onLogout: () => void;
+}
+
+const Dashboard: React.FC<AuthNavProps> = ({ onLogout }) => {
+  const navigate = useNavigate();
   const [sites, setSites] = useState<Site[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  useEffect(() => {
-    fetchSites();
-  }, []);
+
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [url, setUrl] = useState("");
@@ -72,12 +75,26 @@ const Dashboard = () => {
         setLoading(false);
       })
       .catch((err) => {
-        setError(err.message);
+        setError(err.response.data.error);
+        if (err.response.data.error === "Invalid token") {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          onLogout();
+          navigate("/login");
+        }
         setLoading(false);
       });
   };
 
+  useEffect(() => {
+    fetchSites();
+  }, []);
+
   const submitRequest = async () => {
+    if (!name || !url || !monitoringFrequency || !maxResponseTime) {
+      setError("You must fill all the required fields");
+      return;
+    }
     setLoading(true);
     await axios
       .post(
@@ -150,7 +167,13 @@ const Dashboard = () => {
         setLoading(false);
       })
       .catch((err) => {
-        setError(err.message);
+        setError(err.response.data.error);
+        if (err.response.data.error === "Invalid token") {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          onLogout();
+          navigate("/login");
+        }
         setLoading(false);
       });
   };
@@ -173,7 +196,13 @@ const Dashboard = () => {
             />
           ))
         )}
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+          open={open}
+          onOpenChange={() => {
+            setOpen(!open);
+            setError("");
+          }}
+        >
           <DialogTrigger asChild>
             <Button variant="outline" className="w-64 h-50">
               <Plus size={24} />
@@ -190,7 +219,7 @@ const Dashboard = () => {
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-6 items-center gap-4">
                 <Label htmlFor="name" className="col-span-2">
-                  Website Name
+                  Website Name<span className="text-red-600">*</span>
                 </Label>
                 <Input
                   id="name"
@@ -203,7 +232,7 @@ const Dashboard = () => {
               </div>
               <div className="grid grid-cols-6 items-center gap-4">
                 <Label htmlFor="url" className="col-span-2">
-                  Website URL
+                  Website URL<span className="text-red-600">*</span>
                 </Label>
                 <Input
                   id="url"
@@ -216,7 +245,7 @@ const Dashboard = () => {
               </div>
               <div className="grid grid-cols-6 items-center gap-4">
                 <Label htmlFor="frequency" className="col-span-2">
-                  Monitoring Frequency
+                  Monitoring Frequency <span className="text-red-600">*</span>
                 </Label>
                 <Select
                   defaultValue={monitoringFrequency}
@@ -310,7 +339,7 @@ const Dashboard = () => {
               </div>
               <div className="grid grid-cols-6 items-center gap-4">
                 <Label htmlFor="alertThresholds" className="col-span-2">
-                  Alert Thresholds
+                  Alert Thresholds <span className="text-red-600">*</span>
                 </Label>
                 <div className="col-span-4 grid grid-cols-1 gap-2">
                   <Input
