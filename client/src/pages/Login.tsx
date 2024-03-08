@@ -6,8 +6,15 @@ import { Link, useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import axios from "axios";
+import useAuthStore from "../../store";
 
-const Login = () => {
+interface LoginProps {
+  onLogin: () => void;
+}
+
+const Login: React.FC<LoginProps> = ({ onLogin }) => {
+  const setIsLoggedIn = useAuthStore((state) => state.setIsLoggedIn);
+
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,6 +35,8 @@ const Login = () => {
         password,
       })
       .then((res) => {
+        onLogin();
+        setIsLoggedIn(true);
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("user", JSON.stringify(res.data.user));
         setIsLoading(false);

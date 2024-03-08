@@ -8,13 +8,42 @@ const signup = async (req, res) => {
     const existing = await User.findOne({
       email,
     });
-    if (existing) return res.status(400).json({ error: "User already exists" });
+    if (existing) {
+      return res.status(400).json({
+        success: false,
+        error: "User already exists",
+      });
+    }
+
+    if (!email.includes("@") || !email.includes(".")) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid email",
+      });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        error: "Password should be at least 6 characters",
+      });
+    }
 
     const user = new User({ name, email, password });
     await user.save();
-    res.status(201).json({ message: "User created successfully" });
+    res.status(201).json({
+      success: true,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({
+      success: false,
+      error: err.message,
+    });
   }
 };
 

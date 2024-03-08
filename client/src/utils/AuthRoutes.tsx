@@ -6,11 +6,11 @@ interface User {
   email: string;
 }
 
-const PrivateRoutes = () => {
+const AuthRoutes = () => {
   const token = localStorage.getItem("token");
   const user: User | null = JSON.parse(localStorage.getItem("user") || "null");
 
-  return token && user ? <Outlet /> : <Navigate to="/login" />;
+  return token && user ? <Navigate to="/dashboard" /> : <Outlet />;
 };
 
-export default PrivateRoutes;
+export default AuthRoutes;

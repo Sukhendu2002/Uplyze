@@ -5,15 +5,29 @@ import Nav from "./components/Nav";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import PrivateRoutes from "./utils/PrivateRoutes";
+import AuthRoutes from "./utils/AuthRoutes";
+import AuthNav from "./components/AuthNav";
+import useAuthStore from "../store";
 
 function App() {
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  const setIsLoggedIn = useAuthStore((state) => state.setIsLoggedIn);
+  const logout = useAuthStore((state) => state.logout);
+  console.log(isLoggedIn);
+
   return (
     <Router>
-      <Nav />
+      {isLoggedIn ? <AuthNav onLogout={logout} /> : <Nav />}
+
       <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
+        <Route element={<AuthRoutes />}>
+          <Route path="/" element={<Landing />} />
+          <Route
+            path="/login"
+            element={<Login onLogin={() => setIsLoggedIn(true)} />}
+          />
+          <Route path="/signup" element={<SignUp />} />
+        </Route>
         <Route element={<PrivateRoutes />}>
           <Route path="/dashboard" element={<div>Dashboard</div>} />
           <Route path="/profile" element={<div>Profile</div>} />
