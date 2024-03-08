@@ -1,7 +1,8 @@
 const Website = require("../models/website.model");
 
 const createWebsite = async (req, res) => {
-  const { name, url, monitoringSchedule, monitoringSettings } = req.body;
+  const { name, url, monitoringSchedule, monitoringSettings, notifications } =
+    req.body;
 
   try {
     const website = new Website({
@@ -10,11 +11,18 @@ const createWebsite = async (req, res) => {
       owner: req.user,
       monitoringSchedule,
       monitoringSettings,
+      notifications,
     });
     await website.save();
-    res.status(201).json(website);
+    res.status(201).json({
+      success: true,
+      data: website,
+    });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({
+      success: false,
+      error: err.message,
+    });
   }
 };
 

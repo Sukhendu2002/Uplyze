@@ -28,13 +28,11 @@ const websiteSchema = new mongoose.Schema({
   notifications: {
     email: { type: Boolean, default: true },
     sms: {
-      type: Boolean,
-      default: false,
+      active: { type: Boolean, default: false },
       phoneNumber: { type: String },
     },
     slack: {
-      type: Boolean,
-      default: false,
+      active: { type: Boolean, default: false },
       webhookUrl: { type: String },
     },
   },

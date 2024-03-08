@@ -1,8 +1,10 @@
 import React from "react";
 import SiteCard from "@/components/SiteCard";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 import CardSkeleton from "@/components/CardSkeleton";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -11,11 +13,20 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectValue,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
 type Site = {
   _id: string;
@@ -30,6 +41,23 @@ const Dashboard = () => {
   useEffect(() => {
     fetchSites();
   }, []);
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [url, setUrl] = useState("");
+  const [emailChecked, setEmailChecked] = useState(true);
+  const [smsChecked, setSmsChecked] = useState(false);
+  const [slackChecked, setSlackChecked] = useState(false);
+  const [monitoringFrequency, setMonitoringFrequency] = useState("15");
+  const [phone, setPhone] = useState("");
+  const [slackWebhook, setSlackWebhook] = useState("");
+  const [maxResponseTime, setMaxResponseTime] = useState("");
+  const [monitoringCheck, setMonitoringCheck] = useState({
+    httpStatus: true,
+    content: false,
+    ssl: false,
+    performance: false,
+    synthetic: false,
+  });
 
   const fetchSites = async () => {
     await axios
@@ -41,6 +69,84 @@ const Dashboard = () => {
       .then((res) => {
         console.log(res.data);
         setSites(res.data.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
+  };
+
+  const submitRequest = async () => {
+    setLoading(true);
+    await axios
+      .post(
+        `${import.meta.env.VITE_SERVER_API_URL}/api/websites`,
+        {
+          name,
+          url,
+          monitoringSchedule: {
+            frequency: monitoringFrequency,
+          },
+          monitoringSettings: {
+            checks: {
+              httpStatus: monitoringCheck.httpStatus,
+              content: monitoringCheck.content,
+              ssl: monitoringCheck.ssl,
+              performance: monitoringCheck.performance,
+              synthetic: monitoringCheck.synthetic,
+            },
+            alertThresholds: {
+              responseTime: maxResponseTime,
+            },
+          },
+          notifications: {
+            email: emailChecked,
+            sms: {
+              enabled: smsChecked,
+              phoneNumber: phone,
+            },
+            slack: {
+              enabled: slackChecked,
+              webhook: slackWebhook,
+            },
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      )
+      .then((res) => {
+        setSites((prev) => [
+          ...prev,
+          {
+            _id: res.data.data._id,
+            name: res.data.data.name,
+            url: res.data.data.url,
+          },
+        ]);
+        //clear form
+        setName("");
+        setUrl("");
+        setMonitoringFrequency("15");
+        setPhone("");
+        setSlackWebhook("");
+        setMaxResponseTime("");
+        setMonitoringCheck({
+          httpStatus: true,
+          content: false,
+          ssl: false,
+          performance: false,
+          synthetic: false,
+        });
+        setEmailChecked(true);
+        setSmsChecked(false);
+        setSlackChecked(false);
+
+        //close dialog box
+        setOpen(false);
         setLoading(false);
       })
       .catch((err) => {
@@ -67,44 +173,224 @@ const Dashboard = () => {
             />
           ))
         )}
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button variant="outline" className="w-64 h-50">
               <Plus size={24} />
-              Add site
+              Add Site
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
-              <DialogTitle>Edit profile</DialogTitle>
+              <DialogTitle>Add Website</DialogTitle>
               <DialogDescription>
-                Make changes to your profile here. Click save when you're done.
+                Enter the details of the website you want to monitor.
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name" className="text-right">
-                  Name
+              <div className="grid grid-cols-6 items-center gap-4">
+                <Label htmlFor="name" className="col-span-2">
+                  Website Name
                 </Label>
                 <Input
                   id="name"
-                  defaultValue="Pedro Duarte"
-                  className="col-span-3"
+                  className="col-span-4"
+                  placeholder="e.g. My personal blog"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                 />
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="username" className="text-right">
-                  Username
+              <div className="grid grid-cols-6 items-center gap-4">
+                <Label htmlFor="url" className="col-span-2">
+                  Website URL
                 </Label>
                 <Input
-                  id="username"
-                  defaultValue="@peduarte"
-                  className="col-span-3"
+                  id="url"
+                  className="col-span-4"
+                  placeholder="e.g. https://example.com"
+                  type="url"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
                 />
               </div>
+              <div className="grid grid-cols-6 items-center gap-4">
+                <Label htmlFor="frequency" className="col-span-2">
+                  Monitoring Frequency
+                </Label>
+                <Select
+                  defaultValue={monitoringFrequency}
+                  onValueChange={(value) => setMonitoringFrequency(value)}
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select frequency" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="15">15 minutes</SelectItem>
+                    <SelectItem value="30">30 minutes</SelectItem>
+                    <SelectItem value="hourly">Hourly</SelectItem>
+                    <SelectItem value="daily">Daily</SelectItem>
+                    <SelectItem value="weekly">Weekly</SelectItem>
+                    <SelectItem value="monthly">Monthly</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-6 items-center gap-4">
+                <Label htmlFor="check" className="col-span-2">
+                  Monitoring Check
+                </Label>
+
+                <div className="col-span-4 grid grid-cols-3 gap-4">
+                  <div className="flex items-center gap-2 ">
+                    <Label htmlFor="httpStatus">HTTP Status</Label>
+                    <Checkbox
+                      id="httpStatus"
+                      checked={monitoringCheck.httpStatus}
+                      onCheckedChange={() =>
+                        setMonitoringCheck({
+                          ...monitoringCheck,
+                          httpStatus: !monitoringCheck.httpStatus,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 ">
+                    <Label htmlFor="content">Content</Label>
+                    <Checkbox
+                      id="content"
+                      checked={monitoringCheck.content}
+                      onCheckedChange={() =>
+                        setMonitoringCheck({
+                          ...monitoringCheck,
+                          content: !monitoringCheck.content,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 ">
+                    <Label htmlFor="ssl">SSL</Label>
+                    <Checkbox
+                      id="ssl"
+                      checked={monitoringCheck.ssl}
+                      onCheckedChange={() =>
+                        setMonitoringCheck({
+                          ...monitoringCheck,
+                          ssl: !monitoringCheck.ssl,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 ">
+                    <Label htmlFor="performance">Performance</Label>
+                    <Checkbox
+                      id="performance"
+                      checked={monitoringCheck.performance}
+                      onCheckedChange={() =>
+                        setMonitoringCheck({
+                          ...monitoringCheck,
+                          performance: !monitoringCheck.performance,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 ">
+                    <Label htmlFor="synthetic">Synthetic Monitoring</Label>
+                    <Checkbox
+                      id="synthetic"
+                      checked={monitoringCheck.synthetic}
+                      onCheckedChange={() =>
+                        setMonitoringCheck({
+                          ...monitoringCheck,
+                          synthetic: !monitoringCheck.synthetic,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-6 items-center gap-4">
+                <Label htmlFor="alertThresholds" className="col-span-2">
+                  Alert Thresholds
+                </Label>
+                <div className="col-span-4 grid grid-cols-1 gap-2">
+                  <Input
+                    id="responseTime"
+                    placeholder="Max Response Time(ms)"
+                    type="number"
+                    value={maxResponseTime}
+                    onChange={(e) => setMaxResponseTime(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-6 items-center gap-4">
+                <Label htmlFor="notification" className="col-span-2">
+                  Notifications
+                </Label>
+
+                <div className="col-span-4 grid grid-cols-3 gap-4">
+                  <div className="flex items-center gap-2 ">
+                    <Label htmlFor="email">Email</Label>
+                    <Checkbox
+                      id="email"
+                      checked={emailChecked}
+                      onCheckedChange={() => setEmailChecked(!emailChecked)}
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 ">
+                    <Label htmlFor="sms">SMS</Label>
+                    <Checkbox
+                      id="sms"
+                      checked={smsChecked}
+                      onCheckedChange={() => setSmsChecked(!smsChecked)}
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 ">
+                    <Label htmlFor="slack">Slack</Label>
+                    <Checkbox
+                      id="slack"
+                      checked={slackChecked}
+                      onCheckedChange={() => setSlackChecked(!slackChecked)}
+                    />
+                  </div>
+                  <div className="col-span-3 ">
+                    {smsChecked && (
+                      <div className="flex flex-col gap-2 mb-4">
+                        <Label htmlFor="phone">Phone Number</Label>
+                        <Input
+                          id="phone"
+                          placeholder="123-456-7890"
+                          type="tel"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                        />
+                      </div>
+                    )}
+                    {slackChecked && (
+                      <div className="flex flex-col gap-2 ">
+                        <Label htmlFor="slack-webhook">Slack Webhook</Label>
+                        <Input
+                          id="slack-webhook"
+                          placeholder="https://hooks.slack.com/services/XXXXXXXXX/XXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXX"
+                          type="text"
+                          value={slackWebhook}
+                          onChange={(e) => setSlackWebhook(e.target.value)}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+              {error && <p className="px-1 text-xs text-red-600">{error}</p>}
             </div>
             <DialogFooter>
-              <Button type="submit">Save changes</Button>
+              <button
+                onClick={submitRequest}
+                className={cn(buttonVariants())}
+                disabled={loading}
+              >
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Add Website
+              </button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
