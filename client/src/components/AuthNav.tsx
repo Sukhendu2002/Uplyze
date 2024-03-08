@@ -10,22 +10,7 @@ import { ModeToggle } from "./mode-toggle";
 const navItems = [
   {
     title: "Home",
-    href: "/",
-    disabled: false,
-  },
-  {
-    title: "Login",
-    href: "/login",
-    disabled: false,
-  },
-  {
-    title: "About",
-    href: "/about",
-    disabled: false,
-  },
-  {
-    title: "Contact",
-    href: "/contact",
+    href: "/dashboard",
     disabled: false,
   },
 ];

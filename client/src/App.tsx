@@ -8,6 +8,7 @@ import PrivateRoutes from "./utils/PrivateRoutes";
 import AuthRoutes from "./utils/AuthRoutes";
 import AuthNav from "./components/AuthNav";
 import useAuthStore from "../store";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
@@ -29,7 +30,7 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
         </Route>
         <Route element={<PrivateRoutes />}>
-          <Route path="/dashboard" element={<div>Dashboard</div>} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/profile" element={<div>Profile</div>} />
         </Route>
         <Route

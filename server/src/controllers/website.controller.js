@@ -21,9 +21,15 @@ const createWebsite = async (req, res) => {
 const getWebsites = async (req, res) => {
   try {
     const websites = await Website.find({ owner: req.user });
-    res.json(websites);
+    res.status(200).json({
+      success: true,
+      data: websites,
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      success: false,
+      error: err.message,
+    });
   }
 };
 
