@@ -1,5 +1,4 @@
 import React from "react";
-import { ModeToggle } from "../components/mode-toggle";
 import { buttonVariants } from "../components/ui/button";
 import { cn } from "@/lib/utils";
 import { FaHeartbeat } from "react-icons/fa";
@@ -13,7 +12,7 @@ import { Link } from "react-router-dom";
 const Landing = () => {
   return (
     <>
-      <section className="space-y-6 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-32">
+      <section className="space-y-4 pb-8 pt-2 md:pb-12 md:pt-10 lg:py-32">
         <div className="container flex max-w-[64rem] flex-col items-center gap-4 text-center">
           <Link
             to="#"
@@ -22,7 +21,6 @@ const Landing = () => {
           >
             Follow along on Twitter
           </Link>
-          <ModeToggle />
           <h1 className="font-heading font-semibold text-3xl sm:text-5xl md:text-6xl lg:text-7xl">
             Keep Your Websites Up and Running with Uplyze
           </h1>
@@ -31,7 +29,7 @@ const Landing = () => {
             performance and reliability.
           </p>
           <div className="space-x-4">
-            <Link to="/loginn" className={cn(buttonVariants({ size: "lg" }))}>
+            <Link to="/signup" className={cn(buttonVariants({ size: "lg" }))}>
               Get Started for Free
             </Link>
             <a

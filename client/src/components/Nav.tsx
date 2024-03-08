@@ -5,6 +5,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { useLocation } from "react-router-dom";
 import { X, Command } from "lucide-react";
 import MobileNav from "./MobileNav";
+import { ModeToggle } from "./mode-toggle";
 
 const navItems = [
   {
@@ -42,16 +43,16 @@ const Nav = () => {
             <span className="hidden font-bold sm:inline-block">Uplyze</span>
           </Link>
           {navItems?.length ? (
-            <nav className="hidden gap-6 md:flex">
+            <nav className="hidden gap-6 md:flex ">
               {navItems?.map((item, index) => (
                 <Link
                   key={index}
                   to={item.disabled ? "#" : item.href}
                   className={cn(
-                    "flex items-center text-lg font-medium transition-colors hover:text-foreground/80 sm:text-sm",
+                    "flex  items-center text-lg font-medium transition-colorshover:text-foreground/80 sm:text-sm",
                     item.href.startsWith(`/${segment}`)
                       ? "text-foreground"
-                      : "text-foreground/60",
+                      : "text-gray-500",
                     item.disabled && "cursor-not-allowed opacity-80"
                   )}
                 >
@@ -69,7 +70,8 @@ const Nav = () => {
           </button>
           {showMobileMenu && navItems && <MobileNav items={navItems} />}
         </div>
-        <nav>
+        <nav className="flex items-center gap-4 md:gap-6 text-sm font-medium transition-colors hover:text-foreground/80">
+          <ModeToggle />
           <Link
             to="/login"
             className={cn(
