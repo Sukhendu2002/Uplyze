@@ -9,6 +9,7 @@ import AuthRoutes from "./utils/AuthRoutes";
 import AuthNav from "./components/AuthNav";
 import useAuthStore from "../store";
 import Dashboard from "./pages/Dashboard";
+import Site from "./pages/Site";
 
 function App() {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
@@ -32,6 +33,7 @@ function App() {
         <Route element={<PrivateRoutes />}>
           <Route path="/dashboard" element={<Dashboard onLogout={logout} />} />
           <Route path="/profile" element={<div>Profile</div>} />
+          <Route path="/sites/:siteId" element={<Site />} />
         </Route>
         <Route
           path="/*"
