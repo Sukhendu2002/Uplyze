@@ -41,6 +41,22 @@ const websiteSchema = new mongoose.Schema({
       timestamp: { type: Date, required: true },
       uptime: { type: Boolean, required: true },
       responseTime: { type: Number },
+      httpStatus: { type: Number },
+      content: { type: String },
+      ssl: {
+        valid: { type: Boolean },
+        expires: { type: Date },
+      },
+      performance: {
+        ttfb: { type: Number },
+        fcp: { type: Number },
+        domLoad: { type: Number },
+        windowLoad: { type: Number },
+      },
+      syntheticMonitoring: {
+        status: { type: Boolean },
+        responseTime: { type: Number },
+      },
     },
   ],
 });
