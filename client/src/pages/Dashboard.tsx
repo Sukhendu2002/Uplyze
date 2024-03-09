@@ -147,7 +147,7 @@ const Dashboard: React.FC<AuthNavProps> = ({ onLogout }) => {
         //clear form
         setName("");
         setUrl("");
-        setMonitoringFrequency("15");
+        setMonitoringFrequency("15m");
         setPhone("");
         setSlackWebhook("");
         setMaxResponseTime("");
@@ -255,8 +255,8 @@ const Dashboard: React.FC<AuthNavProps> = ({ onLogout }) => {
                     <SelectValue placeholder="Select frequency" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="15">15 minutes</SelectItem>
-                    <SelectItem value="30">30 minutes</SelectItem>
+                    <SelectItem value="15m">15 minutes</SelectItem>
+                    <SelectItem value="30m">30 minutes</SelectItem>
                     <SelectItem value="hourly">Hourly</SelectItem>
                     <SelectItem value="daily">Daily</SelectItem>
                     <SelectItem value="weekly">Weekly</SelectItem>
@@ -287,6 +287,7 @@ const Dashboard: React.FC<AuthNavProps> = ({ onLogout }) => {
                     <Label htmlFor="content">Content</Label>
                     <Checkbox
                       id="content"
+                      disabled
                       checked={monitoringCheck.content}
                       onCheckedChange={() =>
                         setMonitoringCheck({
@@ -300,6 +301,7 @@ const Dashboard: React.FC<AuthNavProps> = ({ onLogout }) => {
                     <Label htmlFor="ssl">SSL</Label>
                     <Checkbox
                       id="ssl"
+                      disabled
                       checked={monitoringCheck.ssl}
                       onCheckedChange={() =>
                         setMonitoringCheck({
@@ -313,6 +315,7 @@ const Dashboard: React.FC<AuthNavProps> = ({ onLogout }) => {
                     <Label htmlFor="performance">Performance</Label>
                     <Checkbox
                       id="performance"
+                      disabled
                       checked={monitoringCheck.performance}
                       onCheckedChange={() =>
                         setMonitoringCheck({
@@ -326,6 +329,7 @@ const Dashboard: React.FC<AuthNavProps> = ({ onLogout }) => {
                     <Label htmlFor="synthetic">Synthetic Monitoring</Label>
                     <Checkbox
                       id="synthetic"
+                      disabled
                       checked={monitoringCheck.synthetic}
                       onCheckedChange={() =>
                         setMonitoringCheck({
@@ -361,6 +365,7 @@ const Dashboard: React.FC<AuthNavProps> = ({ onLogout }) => {
                     <Label htmlFor="email">Email</Label>
                     <Checkbox
                       id="email"
+                      disabled
                       checked={emailChecked}
                       onCheckedChange={() => setEmailChecked(!emailChecked)}
                     />
@@ -369,6 +374,7 @@ const Dashboard: React.FC<AuthNavProps> = ({ onLogout }) => {
                     <Label htmlFor="sms">SMS</Label>
                     <Checkbox
                       id="sms"
+                      disabled
                       checked={smsChecked}
                       onCheckedChange={() => setSmsChecked(!smsChecked)}
                     />

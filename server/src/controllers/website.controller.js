@@ -47,10 +47,20 @@ const getWebsiteById = async (req, res) => {
       _id: req.params.id,
       owner: req.user,
     });
-    if (!website) return res.status(404).json({ error: "Website not found" });
-    res.json(website);
+    if (!website)
+      return res.status(404).json({
+        success: false,
+        error: "Website not found",
+      });
+    res.json({
+      success: true,
+      data: website,
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      success: false,
+      error: err.message,
+    });
   }
 };
 

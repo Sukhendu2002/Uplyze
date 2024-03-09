@@ -51,7 +51,6 @@ const websiteSchema = new mongoose.Schema({
         ttfb: { type: Number },
         fcp: { type: Number },
         domLoad: { type: Number },
-        windowLoad: { type: Number },
       },
       syntheticMonitoring: {
         status: { type: Boolean },
