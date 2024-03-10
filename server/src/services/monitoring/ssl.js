@@ -1,22 +1,25 @@
-const sslChecker = require("ssl-checker");
+const https = require("https");
+const http = require("http");
 
 const checkSSL = async (website) => {
   const { url } = website;
   try {
-    const ssl = await sslChecker(url, {
-      method: "GET",
+    const protocol = url.startsWith("https://") ? https : http;
+
+    return new Promise((resolve, reject) => {
+      const req = protocol.get(url, (res) => {
+        const isSSL = res.socket.encrypted;
+        resolve(isSSL);
+      });
+
+      req.on("error", (err) => {
+        reject(err);
+      });
+
+      req.end();
     });
-    console.log("SSL check", ssl);
-    return {
-      valid: ssl.valid,
-      expires: ssl.valid ? new Date(ssl.valid_to) : null,
-    };
-  } catch (error) {
-    console.error("Error:", error);
-    return {
-      valid: false,
-      expires: null,
-    };
+  } catch (err) {
+    throw err;
   }
 };
 

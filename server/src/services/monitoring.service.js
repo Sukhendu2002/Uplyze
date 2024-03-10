@@ -5,7 +5,7 @@ const axios = require("axios");
 const { sendEmailAlert } = require("../services/notifications.service");
 const checkHttpStatus = require("./monitoring/httpStatusMonitor");
 const checkPerformance = require("./monitoring/performanceMonitor");
-// const checkSSL = require("./monitoring/ssl");
+const checkSSL = require("./monitoring/ssl");
 
 const getResponseTime = async (website) => {
   const start = Date.now();
@@ -75,8 +75,18 @@ const monitorWebsites = async (websites) => {
       console.log("Checking HTTP status");
       const httpStatusCheck = await checkHttpStatus(website);
       uptime = httpStatusCheck.uptime;
+      console.log("Uptime", uptime);
       httpStatus = httpStatusCheck.httpStatus;
-      responseTime = await getResponseTime(website);
+      if (uptime) {
+        responseTime = await getResponseTime(website);
+      } else {
+        responseTime = 0;
+      }
+      console.log({
+        uptime,
+        httpStatus,
+        responseTime,
+      });
     }
 
     // if (monitoringSettings.checks.performance && uptime) {
