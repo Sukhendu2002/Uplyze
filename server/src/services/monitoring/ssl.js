@@ -1,6 +1,14 @@
 const https = require("https");
 
 const checkSSL = async (url) => {
+  if (url.startsWith("http://")) {
+    url = url.replace("http://", "https://");
+  }
+
+  if (!url.startsWith("https://")) {
+    url = `https://${url}`;
+  }
+  console.log("Checking SSL for:", url);
   try {
     const response = await new Promise((resolve, reject) => {
       https
@@ -17,17 +25,28 @@ const checkSSL = async (url) => {
           reject(error);
         });
     });
+    const certificate = response.socket.getPeerCertificate();
+    const valid_to = new Date(certificate.valid_to).getTime();
+    const now = new Date().getTime();
+    const days = Math.floor((valid_to - now) / (1000 * 60 * 60 * 24));
 
-    const sslData = {
-      validFrom: response.socket.getPeerCertificate().valid_from,
-      validTo: response.socket.getPeerCertificate().valid_to,
-      issuer: response.socket.getPeerCertificate().issuer,
+    return {
+      valid: days > 0 ? true : false,
+      extra: {
+        days,
+        issuer: certificate.issuer,
+        subject: certificate.subject,
+        valid_from: certificate.valid_from,
+        valid_to: certificate.valid_to,
+      },
     };
-
-    return sslData;
   } catch (err) {
-    console.error("Error occurred during SSL check:", err);
-    return { error: "SSL check failed" };
+    return {
+      valid: false,
+      extra: {
+        error: err.message,
+      },
+    };
   }
 };
 

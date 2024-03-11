@@ -77,22 +77,21 @@ const monitorWebsites = async (websites) => {
     if (monitoringSettings.checks.httpStatus) {
       console.log("Checking HTTP status");
       let res = await ping.promise.probe(website.url);
-      console.log(res);
 
       const httpStatusCheck = await checkHttpStatus(website);
       uptime = httpStatusCheck.uptime;
-      console.log("Uptime", uptime);
       httpStatus = httpStatusCheck.httpStatus;
       if (uptime) {
         responseTime = await getResponseTime(website);
       } else {
         responseTime = 0;
       }
-      console.log({
-        uptime,
-        httpStatus,
-        responseTime,
-      });
+    }
+
+    if (website.info.ssl.valid === false) {
+      console.log("Checking SSL");
+      const sslCheck = await checkSSL(website.url);
+      ssl = sslCheck;
     }
 
     // //check if website.info.ssl is not a empty object
@@ -130,6 +129,7 @@ const monitorWebsites = async (websites) => {
       responseTime,
       httpStatus,
     });
+    website.info.ssl = ssl;
     await website.save();
 
     if (!uptime) {

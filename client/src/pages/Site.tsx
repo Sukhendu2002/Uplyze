@@ -128,17 +128,31 @@ const Site = () => {
                 </div>
               </CardContent>
             </Card>
-            <Card>
-              <CardHeader style={{ paddingBottom: "0.5rem" }}>
-                <CardTitle style={{ fontSize: "1rem" }}>SSL Status</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div>
-                  <h1>{nextCheckTime}</h1>
-                  <div>Every {websiteData?.monitoringSchedule.frequency} </div>
-                </div>
-              </CardContent>
-            </Card>
+            {websiteData?.info?.ssl && (
+              <Card>
+                <CardHeader style={{ paddingBottom: "0.5rem" }}>
+                  <CardTitle style={{ fontSize: "1rem" }}>SSL Status</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div>
+                    <h1>
+                      {websiteData?.info?.ssl?.valid &&
+                      websiteData?.info?.ssl?.valid === true
+                        ? `Valid for ${websiteData?.info?.ssl?.extra?.days}`
+                        : "Invalid ❌"}
+                    </h1>
+                    <div>
+                      {websiteData?.info?.ssl?.valid &&
+                      websiteData?.info?.ssl?.valid === true
+                        ? `Expires on ${formatTimestamp(
+                            new Date(websiteData?.info?.ssl?.extra?.valid_to)
+                          )}`
+                        : "No SSL certificate found"}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
           <Card className="mb-4">
             <CardHeader>
@@ -147,29 +161,33 @@ const Site = () => {
             <CardContent>
               <Line
                 data={{
-                  labels: websiteData?.monitoringHistory.map(
-                    (entry: {
-                      timestamp: Date;
-                      responseTime: number;
-                      uptime: boolean;
-                      httpStatus: number;
-                    }) => formatTimestamp(entry.timestamp)
-                  ),
+                  labels: websiteData?.monitoringHistory
+                    .slice(-10)
+                    .map(
+                      (entry: {
+                        timestamp: Date;
+                        responseTime: number;
+                        uptime: boolean;
+                        httpStatus: number;
+                      }) => formatTimestamp(entry.timestamp)
+                    ),
                   datasets: [
                     {
                       label: "Response Time",
-                      data: websiteData?.monitoringHistory.map(
-                        (entry: {
-                          timestamp: Date;
-                          responseTime: number;
-                          uptime: boolean;
-                          httpStatus: number;
-                        }) => entry.responseTime
-                      ),
+                      data: websiteData?.monitoringHistory
+                        .slice(-10)
+                        .map(
+                          (entry: {
+                            timestamp: Date;
+                            responseTime: number;
+                            uptime: boolean;
+                            httpStatus: number;
+                          }) => entry.responseTime
+                        ),
                       backgroundColor: "rgba(255, 99, 132, 0.2)",
                       borderColor: "rgba(255, 99, 132, 1)",
                       borderWidth: 1,
-                      pointRadius: 3, // Adjust point radius for visibility
+                      pointRadius: 3,
                       cubicInterpolationMode: "monotone",
                     },
                   ],
@@ -180,8 +198,8 @@ const Site = () => {
                       beginAtZero: true,
                     },
                   },
-                  maintainAspectRatio: false, // Set to false to allow resizing
-                  responsive: true, // Enable responsiveness
+                  maintainAspectRatio: false,
+                  responsive: true,
                 }}
               />
             </CardContent>
@@ -207,25 +225,29 @@ const Site = () => {
             <CardContent>
               <Line
                 data={{
-                  labels: websiteData?.monitoringHistory.map(
-                    (entry: {
-                      timestamp: Date;
-                      responseTime: number;
-                      uptime: boolean;
-                      httpStatus: number;
-                    }) => formatTimestamp(entry.timestamp)
-                  ),
+                  labels: websiteData?.monitoringHistory
+                    .slice(-10)
+                    .map(
+                      (entry: {
+                        timestamp: Date;
+                        responseTime: number;
+                        uptime: boolean;
+                        httpStatus: number;
+                      }) => formatTimestamp(entry.timestamp)
+                    ),
                   datasets: [
                     {
                       label: "Uptime",
-                      data: websiteData?.monitoringHistory.map(
-                        (entry: {
-                          timestamp: Date;
-                          responseTime: number;
-                          uptime: boolean;
-                          httpStatus: number;
-                        }) => (entry.uptime ? 1 : 0)
-                      ),
+                      data: websiteData?.monitoringHistory
+                        .slice(-10)
+                        .map(
+                          (entry: {
+                            timestamp: Date;
+                            responseTime: number;
+                            uptime: boolean;
+                            httpStatus: number;
+                          }) => (entry.uptime ? 1 : 0)
+                        ),
                       backgroundColor: "rgba(75, 192, 192, 0.2)",
                       borderColor: "rgba(75, 192, 192, 1)",
                       borderWidth: 1,

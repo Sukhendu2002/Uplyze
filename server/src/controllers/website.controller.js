@@ -1,13 +1,19 @@
 const Website = require("../models/website.model");
+const checkSSL = require("../services/monitoring/ssl");
 
 const createWebsite = async (req, res) => {
   const { name, url, monitoringSchedule, monitoringSettings, notifications } =
     req.body;
 
   try {
+    const ssl = await checkSSL(url);
+
     const website = new Website({
       name,
       url,
+      info: {
+        ssl,
+      },
       owner: req.user,
       monitoringSchedule,
       monitoringSettings,

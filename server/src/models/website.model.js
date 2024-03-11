@@ -27,12 +27,16 @@ const websiteSchema = new mongoose.Schema({
   },
   info: {
     ssl: {
-      validFrom: { type: Date },
-      validTo: { type: Date },
-      issuer: {
-        C: { type: String },
-        CN: { type: String },
-        O: { type: String },
+      valid: { type: Boolean, default: false },
+      extra: {
+        type: Object,
+        default: {
+          days: 0,
+          issuer: "",
+          subject: "",
+          valid_from: "",
+          valid_to: "",
+        },
       },
     },
   },
