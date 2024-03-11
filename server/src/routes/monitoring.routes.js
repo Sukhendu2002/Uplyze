@@ -2,8 +2,9 @@ const express = require("express");
 const router = express.Router();
 const Website = require("../models/website.model");
 const auth = require("../middlewares/auth.middleware");
+const checkSSL = require("../services/monitoring/ssl");
+const getDomainInfo = require("../services/monitoring/domain");
 
-// Configure monitoring schedule and settings
 router.put("/:id/settings", auth, async (req, res) => {
   const { monitoringSchedule, monitoringSettings, notifications } = req.body;
 
@@ -20,7 +21,6 @@ router.put("/:id/settings", auth, async (req, res) => {
   }
 });
 
-// Get monitoring data for a website
 router.get("/:id/data", auth, async (req, res) => {
   try {
     const website = await Website.findOne({
@@ -34,7 +34,6 @@ router.get("/:id/data", auth, async (req, res) => {
   }
 });
 
-// Get uptime statistics for a website
 router.get("/:id/uptime", auth, async (req, res) => {
   try {
     const website = await Website.findOne({
@@ -55,6 +54,21 @@ router.get("/:id/uptime", auth, async (req, res) => {
     const uptimePercentage =
       (uptimeData.uptimeCount / uptimeData.totalCount) * 100;
     res.json({ uptimePercentage });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get("/:id/ssl", auth, async (req, res) => {
+  try {
+    const website = await Website.findOne({
+      _id: req.params.id,
+      owner: req.user,
+    });
+    if (!website) return res.status(404).json({ error: "Website not found" });
+
+    const sslData = await checkSSL(website.url);
+    res.json(sslData);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

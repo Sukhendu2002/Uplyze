@@ -6,6 +6,8 @@ const { sendEmailAlert } = require("../services/notifications.service");
 const checkHttpStatus = require("./monitoring/httpStatusMonitor");
 const checkPerformance = require("./monitoring/performanceMonitor");
 const checkSSL = require("./monitoring/ssl");
+const getDomainInfo = require("./monitoring/domain");
+const ping = require("ping");
 
 const getResponseTime = async (website) => {
   const start = Date.now();
@@ -70,9 +72,13 @@ const monitorWebsites = async (websites) => {
     let httpStatus;
     // let performanceData;
     let responseTime;
+    let ssl = website.info.ssl;
 
     if (monitoringSettings.checks.httpStatus) {
       console.log("Checking HTTP status");
+      let res = await ping.promise.probe(website.url);
+      console.log(res);
+
       const httpStatusCheck = await checkHttpStatus(website);
       uptime = httpStatusCheck.uptime;
       console.log("Uptime", uptime);
@@ -89,6 +95,12 @@ const monitorWebsites = async (websites) => {
       });
     }
 
+    // //check if website.info.ssl is not a empty object
+    // if (website.info.ssl && Object.keys(website.info.ssl).length === 0) {
+    //   const sslCheck = await checkSSL(website.url);
+    //   console.log("SSL check", sslCheck);
+    // }
+
     // if (monitoringSettings.checks.performance && uptime) {
     //   console.log("Checking performance");
     //   const performanceData = await checkPerformance(website);
@@ -100,6 +112,10 @@ const monitorWebsites = async (websites) => {
     //   const sslCheck = await checkSSL(website);
     //   console.log("SSL check", sslCheck);
     // }
+
+    // const domainInfo = await getDomainInfo(website);
+    // console.log("Domain info", domainInfo);
+
     // console.log({
     //   timestamp: new Date(),
     //   uptime,

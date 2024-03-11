@@ -25,6 +25,17 @@ const websiteSchema = new mongoose.Schema({
       missingContent: { type: String },
     },
   },
+  info: {
+    ssl: {
+      validFrom: { type: Date },
+      validTo: { type: Date },
+      issuer: {
+        C: { type: String },
+        CN: { type: String },
+        O: { type: String },
+      },
+    },
+  },
   notifications: {
     email: { type: Boolean, default: true },
     sms: {
