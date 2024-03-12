@@ -39,6 +39,22 @@ const websiteSchema = new mongoose.Schema({
         },
       },
     },
+    domain: {
+      valid: { type: Boolean, default: false },
+      extra: {
+        type: Object,
+        default: {
+          domainName: "",
+          registryDomainId: "",
+          registrarWhoisServer: "",
+          registrarUrl: "",
+          updatedDate: "",
+          creationDate: "",
+          registryExpiryDate: "",
+          registrar: "",
+        },
+      },
+    },
   },
   notifications: {
     email: { type: Boolean, default: true },

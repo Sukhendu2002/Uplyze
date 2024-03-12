@@ -6,7 +6,6 @@ const { sendEmailAlert } = require("../services/notifications.service");
 const checkHttpStatus = require("./monitoring/httpStatusMonitor");
 const checkPerformance = require("./monitoring/performanceMonitor");
 const checkSSL = require("./monitoring/ssl");
-const getDomainInfo = require("./monitoring/domain");
 const ping = require("ping");
 
 const getResponseTime = async (website) => {
@@ -94,12 +93,6 @@ const monitorWebsites = async (websites) => {
       ssl = sslCheck;
     }
 
-    // //check if website.info.ssl is not a empty object
-    // if (website.info.ssl && Object.keys(website.info.ssl).length === 0) {
-    //   const sslCheck = await checkSSL(website.url);
-    //   console.log("SSL check", sslCheck);
-    // }
-
     // if (monitoringSettings.checks.performance && uptime) {
     //   console.log("Checking performance");
     //   const performanceData = await checkPerformance(website);
@@ -107,22 +100,6 @@ const monitorWebsites = async (websites) => {
     // }
     // console.log("Performance data", performanceData);
 
-    // if (monitoringSettings.checks.ssl && uptime) {
-    //   const sslCheck = await checkSSL(website);
-    //   console.log("SSL check", sslCheck);
-    // }
-
-    // const domainInfo = await getDomainInfo(website);
-    // console.log("Domain info", domainInfo);
-
-    // console.log({
-    //   timestamp: new Date(),
-    //   uptime,
-    //   responseTime,
-    //   httpStatus,
-    //   performance: performanceData,
-    // });
-    // Save monitoring data to database
     website.monitoringHistory.push({
       timestamp: new Date(),
       uptime,

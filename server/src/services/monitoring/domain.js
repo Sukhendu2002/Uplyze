@@ -1,38 +1,65 @@
 const whois = require("whois");
 const url = require("url");
 
-const getDomainInfo = async (website) => {
-  const { url } = website;
+const parseWhoisData = (rawWhoisData) => {
+  const lines = rawWhoisData.split("\n");
+  const usefulInfo = lines
+    .map((line) => {
+      if (line.includes(":")) {
+        const [key, value] = line.split(":");
+        return { [key.trim()]: value.trim() };
+      }
+    })
+    .filter((info) => info);
 
-  const parsedUrl = url.parse(inputUrl);
+  return usefulInfo;
+};
+
+const getDomainInfo = async (inputUrl) => {
+  console.log(inputUrl);
+  const parsedUrl = new URL(inputUrl);
+  console.log(parsedUrl);
   let domain = parsedUrl.hostname;
 
-  // Remove subdomains
-  const subdomains = domain.split(".").slice(0, -2); // Remove the last two elements
-  if (subdomains.length > 0) {
-    domain = subdomains.join(".");
+  domain = domain.replace("www.", "");
+
+  if (!domain.includes("edu") && !domain.includes("gov")) {
+    if (domain.split(".").length > 2) {
+      domain = domain.split(".").slice(-2).join(".");
+    }
   }
 
-  console.log(domain);
   try {
-    await whois.lookup(
-      domain,
-      {
-        server: "whois.verisign-grs.com",
-        follow: 2,
-        verbose: true,
-      },
-      (err, data) => {
+    const data = await new Promise((resolve, reject) => {
+      whois.lookup(domain, (err, data) => {
         if (err) {
-          console.error(err);
-          return;
+          reject(err);
+        } else {
+          resolve(data);
         }
-        console.log(data);
-      }
-    );
+      });
+    });
+
+    const usefulInfo = parseWhoisData(data);
+    return {
+      valid: true,
+      extra: usefulInfo.reduce((acc, cur) => {
+        acc = { ...acc, ...cur };
+        return acc;
+      }, {}),
+    };
   } catch (error) {
-    console.error(error);
+    return {
+      valid: false,
+      error: {
+        message: error.message,
+        stack: error.stack,
+      },
+    };
   }
 };
 
-module.exports = getDomainInfo;
+module.exports = {
+  getDomainInfo,
+  parseWhoisData,
+};

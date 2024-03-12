@@ -102,10 +102,22 @@ const getNextCheckTime = (
   }
 };
 
+const findDomainExpiry = (domainData: any) => {
+  const key = Object.keys(domainData).find((key) => key.includes("Expi"));
+  return key
+    ? `Expires on ${domainData[key]
+        .split("T")[0]
+        .split("-")
+        .reverse()
+        .join("-")}`
+    : "No expiry date found";
+};
+
 export {
   formatTimestamp,
   getMaxResponseTime,
   getMinResponseTime,
   getAverageResponseTime,
   getNextCheckTime,
+  findDomainExpiry,
 };

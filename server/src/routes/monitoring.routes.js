@@ -3,7 +3,10 @@ const router = express.Router();
 const Website = require("../models/website.model");
 const auth = require("../middlewares/auth.middleware");
 const checkSSL = require("../services/monitoring/ssl");
-const getDomainInfo = require("../services/monitoring/domain");
+const {
+  getDomainInfo,
+  parseWhoisData,
+} = require("../services/monitoring/domain");
 
 router.put("/:id/settings", auth, async (req, res) => {
   const { monitoringSchedule, monitoringSettings, notifications } = req.body;
@@ -71,6 +74,27 @@ router.get("/:id/ssl", auth, async (req, res) => {
     res.json(sslData);
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+router.get("/:id/domain", auth, async (req, res) => {
+  try {
+    const website = await Website.findOne({
+      _id: req.params.id,
+      owner: req.user,
+    });
+    if (!website) return res.status(404).json({ error: "Website not found" });
+    const domainData = await getDomainInfo(website.url);
+
+    res.json(domainData);
+  } catch (err) {
+    res.status(500).json({
+      valid: false,
+      extra: {
+        message: err.message,
+        stack: err.stack,
+      },
+    });
   }
 });
 

@@ -11,7 +11,7 @@ mongoose
   .then(() => {
     console.log("Connected to the database");
     // 15 minutes cron task
-    cron.schedule("*/1 * * * *", async () => {
+    cron.schedule("*/15 * * * *", async () => {
       const websites = await getWebsitesToMonitor("15m");
       await monitorWebsites(websites);
     });

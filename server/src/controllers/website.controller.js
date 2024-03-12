@@ -1,5 +1,6 @@
 const Website = require("../models/website.model");
 const checkSSL = require("../services/monitoring/ssl");
+const { getDomainInfo } = require("../services/monitoring/domain");
 
 const createWebsite = async (req, res) => {
   const { name, url, monitoringSchedule, monitoringSettings, notifications } =
@@ -7,12 +8,14 @@ const createWebsite = async (req, res) => {
 
   try {
     const ssl = await checkSSL(url);
+    const domainData = await getDomainInfo(url);
 
     const website = new Website({
       name,
       url,
       info: {
         ssl,
+        domain: domainData,
       },
       owner: req.user,
       monitoringSchedule,

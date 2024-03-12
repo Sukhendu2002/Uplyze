@@ -4,12 +4,14 @@ import { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 import { Chart, registerables } from "chart.js";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import SkeletonSite from "@/components/SkeletonSite";
 import {
   formatTimestamp,
   getMaxResponseTime,
   getMinResponseTime,
   getAverageResponseTime,
   getNextCheckTime,
+  findDomainExpiry,
 } from "@/utils/misc";
 Chart.register(...registerables);
 const Site = () => {
@@ -21,7 +23,6 @@ const Site = () => {
 
   useEffect(() => {
     fetchWebsiteData().then(() => setIsLoading(false));
-    fetchSslData().then(() => setIsLoading(false));
   }, [siteId]);
 
   const fetchWebsiteData = async () => {
@@ -48,28 +49,13 @@ const Site = () => {
     }
   };
 
-  const fetchSslData = async () => {
-    try {
-      await axios
-        .get(
-          `${import.meta.env.VITE_SERVER_API_URL}/api/monitoring/${siteId}/ssl`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        )
-        .then((res) => {
-          console.log(res.data.data);
-        });
-    } catch (error) {
-      setError(error.message);
-      setIsLoading(false);
-    }
-  };
+  if (isLoading) {
+    return <SkeletonSite />;
+  }
 
   return (
     <div className="flex flex-col text-left my-4 max-w-6xl mx-auto">
+      {error && <div className="text-red-500 text-lg my-4">{error}</div>}
       <div className="flex flex-col text-left my-4">
         <h1
           className="text-4xl"
@@ -138,7 +124,8 @@ const Site = () => {
                     <h1>
                       {websiteData?.info?.ssl?.valid &&
                       websiteData?.info?.ssl?.valid === true
-                        ? `Valid for ${websiteData?.info?.ssl?.extra?.days}`
+                        ? // ? `Valid for ${websiteData?.info?.ssl?.extra?.days}`
+                          "Valid ✅"
                         : "Invalid ❌"}
                     </h1>
                     <div>
@@ -148,6 +135,33 @@ const Site = () => {
                             new Date(websiteData?.info?.ssl?.extra?.valid_to)
                           )}`
                         : "No SSL certificate found"}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+            {websiteData?.info?.domain && (
+              <Card>
+                <CardHeader style={{ paddingBottom: "0.5rem" }}>
+                  <CardTitle style={{ fontSize: "1rem" }}>
+                    Domain Status
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div>
+                    <h1>
+                      {websiteData?.info?.domain?.valid &&
+                      websiteData?.info?.domain?.valid === true
+                        ? (websiteData?.info?.domain?.extra[
+                            "Domain Name"
+                          ] as string)
+                        : "Invalid ❌"}
+                    </h1>
+                    <div>
+                      {websiteData?.info?.ssl?.valid &&
+                      websiteData?.info?.ssl?.valid === true
+                        ? findDomainExpiry(websiteData?.info?.domain?.extra)
+                        : "No domain Info"}
                     </div>
                   </div>
                 </CardContent>
