@@ -103,10 +103,36 @@ const deleteWebsite = async (req, res) => {
   }
 };
 
+const toggleMonitoring = async (req, res) => {
+  try {
+    const website = await Website.findOne({
+      _id: req.params.id,
+      owner: req.user,
+    });
+    if (!website)
+      return res.status(404).json({
+        success: false,
+        error: "Website not found",
+      });
+    website.active = !website.active;
+    await website.save();
+    res.json({
+      success: true,
+      data: website,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      error: err.message,
+    });
+  }
+};
+
 module.exports = {
   createWebsite,
   getWebsites,
   getWebsiteById,
   updateWebsite,
   deleteWebsite,
+  toggleMonitoring,
 };

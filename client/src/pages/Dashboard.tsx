@@ -57,7 +57,6 @@ const Dashboard: React.FC<AuthNavProps> = ({ onLogout }) => {
   const [monitoringCheck, setMonitoringCheck] = useState({
     httpStatus: true,
     content: false,
-    ssl: false,
     performance: false,
     synthetic: false,
   });
@@ -109,7 +108,6 @@ const Dashboard: React.FC<AuthNavProps> = ({ onLogout }) => {
             checks: {
               httpStatus: monitoringCheck.httpStatus,
               content: monitoringCheck.content,
-              ssl: monitoringCheck.ssl,
               performance: monitoringCheck.performance,
               synthetic: monitoringCheck.synthetic,
             },
@@ -154,7 +152,6 @@ const Dashboard: React.FC<AuthNavProps> = ({ onLogout }) => {
         setMonitoringCheck({
           httpStatus: true,
           content: false,
-          ssl: false,
           performance: false,
           synthetic: false,
         });
@@ -274,6 +271,7 @@ const Dashboard: React.FC<AuthNavProps> = ({ onLogout }) => {
                     <Label htmlFor="httpStatus">HTTP Status</Label>
                     <Checkbox
                       id="httpStatus"
+                      disabled
                       checked={monitoringCheck.httpStatus}
                       onCheckedChange={() =>
                         setMonitoringCheck({
@@ -283,7 +281,7 @@ const Dashboard: React.FC<AuthNavProps> = ({ onLogout }) => {
                       }
                     />
                   </div>
-                  <div className="flex items-center gap-2 ">
+                  {/* <div className="flex items-center gap-2 ">
                     <Label htmlFor="content">Content</Label>
                     <Checkbox
                       id="content"
@@ -296,26 +294,12 @@ const Dashboard: React.FC<AuthNavProps> = ({ onLogout }) => {
                         })
                       }
                     />
-                  </div>
-                  <div className="flex items-center gap-2 ">
-                    <Label htmlFor="ssl">SSL</Label>
-                    <Checkbox
-                      id="ssl"
-                      disabled
-                      checked={monitoringCheck.ssl}
-                      onCheckedChange={() =>
-                        setMonitoringCheck({
-                          ...monitoringCheck,
-                          ssl: !monitoringCheck.ssl,
-                        })
-                      }
-                    />
-                  </div>
+                  </div> */}
+
                   <div className="flex items-center gap-2 ">
                     <Label htmlFor="performance">Performance</Label>
                     <Checkbox
                       id="performance"
-                      disabled
                       checked={monitoringCheck.performance}
                       onCheckedChange={() =>
                         setMonitoringCheck({
@@ -383,6 +367,7 @@ const Dashboard: React.FC<AuthNavProps> = ({ onLogout }) => {
                     <Label htmlFor="slack">Slack</Label>
                     <Checkbox
                       id="slack"
+                      disabled
                       checked={slackChecked}
                       onCheckedChange={() => setSlackChecked(!slackChecked)}
                     />

@@ -69,7 +69,7 @@ const monitorWebsites = async (websites) => {
 
     let uptime = true;
     let httpStatus;
-    // let performanceData;
+    let performanceData;
     let responseTime;
     let ssl = website.info.ssl;
 
@@ -93,18 +93,22 @@ const monitorWebsites = async (websites) => {
       ssl = sslCheck;
     }
 
-    // if (monitoringSettings.checks.performance && uptime) {
-    //   console.log("Checking performance");
-    //   const performanceData = await checkPerformance(website);
-    //   performanceData = performanceData;
+    // if (uptime) {
+    //   console.log("Checking Synthetic Monitoring");
+    //   await performSyntheticMonitoring(website);
     // }
-    // console.log("Performance data", performanceData);
+
+    if (monitoringSettings.checks.performance && uptime) {
+      console.log("Checking Performance");
+      performanceData = await checkPerformance(website);
+    }
 
     website.monitoringHistory.push({
       timestamp: new Date(),
       uptime,
       responseTime,
       httpStatus,
+      performance: performanceData,
     });
     website.info.ssl = ssl;
     await website.save();

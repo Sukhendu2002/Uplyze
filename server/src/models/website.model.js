@@ -16,7 +16,6 @@ const websiteSchema = new mongoose.Schema({
     checks: {
       httpStatus: { type: Boolean, default: true },
       content: { type: Boolean, default: false },
-      ssl: { type: Boolean, default: false },
       performance: { type: Boolean, default: false },
       syntheticMonitoring: { type: Boolean, default: false },
     },
@@ -74,14 +73,10 @@ const websiteSchema = new mongoose.Schema({
       responseTime: { type: Number },
       httpStatus: { type: Number },
       content: { type: String },
-      ssl: {
-        valid: { type: Boolean },
-        expires: { type: Date },
-      },
       performance: {
-        ttfb: { type: Number },
-        fcp: { type: Number },
-        domLoad: { type: Number },
+        ttfb: { type: Number, default: 0 },
+        fcp: { type: Number, default: 0 },
+        domLoad: { type: Number, default: 0 },
       },
       syntheticMonitoring: {
         status: { type: Boolean },

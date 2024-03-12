@@ -26,13 +26,13 @@
     --radius: 0.5rem;
   }
   .dark {
-    --background: 130 25% 5%;
+    --background: 240 10% 3.9%;
     --foreground: 130 5% 90%;
     --card: 130 25% 4%;
     --card-foreground: 130 5% 90%;
     --popover: 130 25% 5%;
     --popover-foreground: 130 5% 90%;
-    --primary: 130 95% 69%;
+    --primary: 142.1 76.2% 36.3%;
     --primary-foreground: 0 0% 0%;
     --secondary: 130 25% 10%;
     --secondary-foreground: 0 0% 100%;

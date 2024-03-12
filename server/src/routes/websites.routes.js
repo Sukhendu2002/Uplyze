@@ -7,6 +7,7 @@ const {
   getWebsiteById,
   updateWebsite,
   deleteWebsite,
+  toggleMonitoring,
 } = require("../controllers/website.controller");
 
 // Create a new website
@@ -23,5 +24,8 @@ router.put("/:id", auth, updateWebsite);
 
 // Delete a website
 router.delete("/:id", auth, deleteWebsite);
+
+// Toggle monitoring
+router.put("/:id/toggle-monitoring", auth, toggleMonitoring);
 
 module.exports = router;

@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 import { Chart, registerables } from "chart.js";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import SkeletonSite from "@/components/SkeletonSite";
 import {
   formatTimestamp,
@@ -20,6 +22,7 @@ const Site = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [nextCheckTime, setNextCheckTime] = useState<string | null>(null);
+  const [active, setActive] = useState<boolean>(true);
 
   useEffect(() => {
     fetchWebsiteData().then(() => setIsLoading(false));
@@ -35,6 +38,7 @@ const Site = () => {
         })
         .then((res) => {
           setWebsiteData(res.data.data);
+          setActive(res.data.data.active);
           setNextCheckTime(
             getNextCheckTime(
               res.data.data.monitoringHistory,
@@ -49,6 +53,31 @@ const Site = () => {
     }
   };
 
+  const toggleMonitoring = async () => {
+    try {
+      await axios
+        .put(
+          `${
+            import.meta.env.VITE_SERVER_API_URL
+          }/api/websites/${siteId}/toggle-monitoring`,
+          {
+            active: !active,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res.data);
+        });
+    } catch (error) {
+      console.log(error);
+      setError(error.message);
+    }
+  };
+
   if (isLoading) {
     return <SkeletonSite />;
   }
@@ -56,25 +85,38 @@ const Site = () => {
   return (
     <div className="flex flex-col text-left my-4 max-w-6xl mx-auto">
       {error && <div className="text-red-500 text-lg my-4">{error}</div>}
-      <div className="flex flex-col text-left my-4">
-        <h1
-          className="text-4xl"
-          style={{ marginBottom: "1rem", fontWeight: "bold" }}
-        >
-          {websiteData?.name}
-        </h1>
-        <a
-          href={websiteData?.url}
-          target="_blank"
-          rel="noreferrer"
-          className="text-blue-500"
-        >
-          {websiteData?.url}
-        </a>
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex flex-col text-left">
+          <h1
+            className="text-4xl"
+            style={{ marginBottom: "1rem", fontWeight: "bold" }}
+          >
+            {websiteData?.name}
+          </h1>
+          <a
+            href={websiteData?.url}
+            target="_blank"
+            rel="noreferrer"
+            className="text-blue-500"
+          >
+            {websiteData?.url}
+          </a>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Switch
+            id="airplane-mode"
+            checked={active}
+            onCheckedChange={(checked) => {
+              setActive(checked);
+              toggleMonitoring();
+            }}
+          />
+          <Label htmlFor="airplane-mode">Monitoring</Label>
+        </div>
       </div>
       {websiteData && websiteData.monitoringHistory.length > 0 ? (
         <div>
-          <div className="flex gap-4 mb-4">
+          <div className="flex gap-4 mb-4 flex-col md:flex-row lg:flex-row">
             <Card>
               <CardHeader style={{ paddingBottom: "0.5rem" }}>
                 <CardTitle style={{ fontSize: "1rem" }}>
@@ -140,7 +182,7 @@ const Site = () => {
                 </CardContent>
               </Card>
             )}
-            {websiteData?.info?.domain && (
+            {websiteData?.info?.domain?.valid && (
               <Card>
                 <CardHeader style={{ paddingBottom: "0.5rem" }}>
                   <CardTitle style={{ fontSize: "1rem" }}>
@@ -200,9 +242,11 @@ const Site = () => {
                         ),
                       backgroundColor: "rgba(255, 99, 132, 0.2)",
                       borderColor: "rgba(255, 99, 132, 1)",
-                      borderWidth: 1,
+                      borderWidth: 1.5,
                       pointRadius: 3,
                       cubicInterpolationMode: "monotone",
+                      fill: true, 
+                      tension: 0.4,
                     },
                   ],
                 }}
@@ -214,6 +258,13 @@ const Site = () => {
                   },
                   maintainAspectRatio: false,
                   responsive: true,
+                  plugins: {
+                    tooltip: {
+                      enabled: true,
+                      mode: "nearest",
+                      intersect: false,
+                    },
+                  },
                 }}
               />
             </CardContent>
@@ -232,6 +283,113 @@ const Site = () => {
               </div>
             </CardContent>
           </Card>
+          {websiteData?.monitoringSettings?.checks?.performance && (
+            <Card className="mb-4">
+              <CardHeader>
+                <CardTitle>Performance History</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Line
+                  data={{
+                    labels: websiteData?.monitoringHistory.slice(-10).map(
+                      (entry: {
+                        timestamp: Date;
+                        responseTime: number;
+                        uptime: boolean;
+                        httpStatus: number;
+                        performance: {
+                          ttfb: number;
+                          fcp: number;
+                          domLoad: number;
+                        };
+                      }) => formatTimestamp(entry.timestamp)
+                    ),
+                    datasets: [
+                      {
+                        label: "Time to First Byte",
+                        data: websiteData?.monitoringHistory.slice(-10).map(
+                          (entry: {
+                            timestamp: Date;
+                            responseTime: number;
+                            uptime: boolean;
+                            httpStatus: number;
+                            performance: {
+                              ttfb: number;
+                              fcp: number;
+                              domLoad: number;
+                            };
+                          }) => entry.performance.ttfb
+                        ),
+                        backgroundColor: "rgba(255, 159, 64, 0.2)",
+                        borderColor: "rgba(255, 159, 64, 1)",
+                        borderWidth: 1.5,
+                        pointRadius: 3,
+                        cubicInterpolationMode: "monotone",
+                      },
+                      {
+                        label: "First Contentful Paint",
+                        data: websiteData?.monitoringHistory.slice(-10).map(
+                          (entry: {
+                            timestamp: Date;
+                            responseTime: number;
+                            uptime: boolean;
+                            httpStatus: number;
+                            performance: {
+                              ttfb: number;
+                              fcp: number;
+                              domLoad: number;
+                            };
+                          }) => entry.performance.fcp
+                        ),
+                        backgroundColor: "rgba(153, 102, 255, 0.2)",
+                        borderColor: "rgba(153, 102, 255, 1)",
+                        borderWidth: 1.5,
+                        pointRadius: 3,
+                        cubicInterpolationMode: "monotone",
+                      },
+                      {
+                        label: "DOM Load",
+                        data: websiteData?.monitoringHistory.slice(-10).map(
+                          (entry: {
+                            timestamp: Date;
+                            responseTime: number;
+                            uptime: boolean;
+                            httpStatus: number;
+                            performance: {
+                              ttfb: number;
+                              fcp: number;
+                              domLoad: number;
+                            };
+                          }) => entry.performance.domLoad
+                        ),
+                        backgroundColor: "rgba(255, 99, 132, 0.2)",
+                        borderColor: "rgba(255, 99, 132, 1)",
+                        borderWidth: 1.5,
+                        pointRadius: 3,
+                        cubicInterpolationMode: "monotone",
+                      },
+                    ],
+                  }}
+                  options={{
+                    scales: {
+                      y: {
+                        beginAtZero: true,
+                      },
+                    },
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    plugins: {
+                      tooltip: {
+                        enabled: true,
+                        mode: "nearest",
+                        intersect: false,
+                      },
+                    },
+                  }}
+                />
+              </CardContent>
+            </Card>
+          )}
           <Card>
             <CardHeader>
               <CardTitle>Uptime History</CardTitle>
@@ -264,7 +422,7 @@ const Site = () => {
                         ),
                       backgroundColor: "rgba(75, 192, 192, 0.2)",
                       borderColor: "rgba(75, 192, 192, 1)",
-                      borderWidth: 1,
+                      borderWidth: 1.5,
                       pointRadius: 3,
                       cubicInterpolationMode: "monotone",
                     },
@@ -274,11 +432,17 @@ const Site = () => {
                   scales: {
                     y: {
                       beginAtZero: true,
-                      suggestedMax: 1,
                     },
                   },
                   maintainAspectRatio: false,
                   responsive: true,
+                  plugins: {
+                    tooltip: {
+                      enabled: true,
+                      mode: "nearest",
+                      intersect: false,
+                    },
+                  },
                 }}
               />
             </CardContent>
