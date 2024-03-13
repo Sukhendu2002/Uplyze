@@ -12,6 +12,7 @@ mongoose
     console.log("Connected to the database");
     // 15 minutes cron task
     cron.schedule("*/1 * * * *", async () => {
+      console.log("15m Task Running" + new Date());
       const websites = await getWebsitesToMonitor("15m");
       await monitorWebsites(websites);
     });

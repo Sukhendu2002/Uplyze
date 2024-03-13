@@ -113,6 +113,44 @@ const findDomainExpiry = (domainData: any) => {
     : "No expiry date found";
 };
 
+function is15Minutes(freq: string): boolean {
+  if (freq === "15m") {
+    return true;
+  }
+  return false;
+}
+
+function is30Minutes(freq: string): boolean {
+  if (freq === "30m") {
+    return true;
+  }
+  return false;
+}
+
+function isHourly(freq: string): boolean {
+  if (freq === "hourly") {
+    return true;
+  }
+  return false;
+}
+
+function formatTime(timestamp: Date): string {
+  timestamp = new Date(timestamp);
+  const hours = timestamp.getHours();
+  const minutes = timestamp.getMinutes();
+  return `${hours < 10 ? "0" + hours : hours}:${
+    minutes < 10 ? "0" + minutes : minutes
+  }`;
+}
+
+function formatXTimestamp(timestamp: Date): string {
+  timestamp = new Date(timestamp);
+  const month = timestamp.getMonth() + 1;
+  const date = timestamp.getDate();
+  const year = timestamp.getFullYear();
+  return `${month}/${date}/${year}`;
+}
+
 export {
   formatTimestamp,
   getMaxResponseTime,
@@ -120,4 +158,9 @@ export {
   getAverageResponseTime,
   getNextCheckTime,
   findDomainExpiry,
+  is15Minutes,
+  is30Minutes,
+  isHourly,
+  formatTime,
+  formatXTimestamp,
 };
