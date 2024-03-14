@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import axios, { AxiosError } from "axios"; // @ts-ignore
+import axios, { AxiosError } from "axios";
 import { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 import { Chart, registerables } from "chart.js";
@@ -56,7 +56,7 @@ interface Entry {
 
 const Site = () => {
   const siteId = useParams().siteId;
-  const [websiteData, setWebsiteData] = useState<any>(null); // @ts-ignore
+  const [websiteData, setWebsiteData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [nextCheckTime, setNextCheckTime] = useState<string | null>(null);
