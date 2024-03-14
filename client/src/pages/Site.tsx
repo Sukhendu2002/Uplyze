@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError } from "axios"; // @ts-ignore
 import { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 import { Chart, registerables } from "chart.js";
@@ -54,87 +54,9 @@ interface Entry {
   };
 }
 
-interface WebsiteData {
-  name: string;
-  url: string;
-  owner: any; // Replace 'any' with the appropriate type for mongoose.Schema.Types.ObjectId
-  active: boolean;
-  monitoringSchedule: {
-    frequency: string;
-    timeRange: {
-      start?: string;
-      end?: string;
-    };
-  };
-  monitoringSettings: {
-    checks: {
-      httpStatus: boolean;
-      content: boolean;
-      performance: boolean;
-      syntheticMonitoring: boolean;
-    };
-    alertThresholds: {
-      responseTime?: number;
-      missingContent?: string;
-    };
-  };
-  info: {
-    ssl: {
-      valid: boolean;
-      extra: {
-        days: number;
-        issuer: string;
-        subject: string;
-        valid_from: string;
-        valid_to: string;
-      };
-    };
-    domain: {
-      valid: boolean;
-      extra: {
-        domainName: string;
-        registryDomainId: string;
-        registrarWhoisServer: string;
-        registrarUrl: string;
-        updatedDate: string;
-        creationDate: string;
-        registryExpiryDate: string;
-        registrar: string;
-      };
-    };
-  };
-  notifications: {
-    email: boolean;
-    sms: {
-      active: boolean;
-      phoneNumber?: string;
-    };
-    slack: {
-      active: boolean;
-      webhookUrl?: string;
-    };
-  };
-  monitoringHistory: {
-    timestamp: Date;
-    uptime: boolean;
-    responseTime?: number;
-    httpStatus?: number;
-    content?: string;
-    performance: {
-      ttfb: number;
-      fcp: number;
-      domLoad: number;
-    };
-    syntheticMonitoring: {
-      status?: boolean;
-      responseTime?: number;
-    };
-  }[];
-}
-
 const Site = () => {
   const siteId = useParams().siteId;
-  const [websiteData, setWebsiteData] = useState<WebsiteData | null>(null);
+  const [websiteData, setWebsiteData] = useState<any>(null); // @ts-ignore
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [nextCheckTime, setNextCheckTime] = useState<string | null>(null);
@@ -164,7 +86,7 @@ const Site = () => {
           );
           console.log(res.data.data);
         });
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
       setError(error.message);
       setIsLoading(false);
