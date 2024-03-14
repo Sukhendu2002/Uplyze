@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user.model");
+const { sendEmailAlert } = require("../services/notifications.service");
 
 const signup = async (req, res) => {
   const { name, email, password } = req.body;
@@ -31,6 +32,14 @@ const signup = async (req, res) => {
 
     const user = new User({ name, email, password });
     await user.save();
+    await sendEmailAlert(
+      email,
+      "Welcome to Uplyze!",
+      `<p>Hi ${name},</p>
+      <p>Thank you for signing up for Uplyze. We are excited to have you on board.</p>
+      <p>Best,</p>
+      <p>Team Uplyze</p>`
+    );
     res.status(201).json({
       success: true,
       user: {

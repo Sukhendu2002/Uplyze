@@ -1,22 +1,26 @@
-const sgMail = require("@sendgrid/mail");
+const nodemailer = require("nodemailer");
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: 587,
+  secure: false,
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
 
-const sendEmailAlert = (to, subject, html) => {
-  const msg = {
-    to,
-    from: process.env.EMAIL_FROM,
-    subject,
-    html,
-  };
-  sgMail
-    .send(msg)
-    .then(() => {
-      console.log("Email sent");
-    })
-    .catch((error) => {
-      console.error(error);
+const sendEmailAlert = async (to, subject, html) => {
+  try {
+    await transporter.sendMail({
+      from: '"Team Uplyze" <info@trial-x2p0347vdvk4zdrn.mlsender.net>',
+      to,
+      subject,
+      html,
     });
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 module.exports = { sendEmailAlert };
