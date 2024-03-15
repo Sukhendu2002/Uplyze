@@ -28,6 +28,9 @@ jobs:
           cache: "pnpm"
           cache-dependency-path: "./server/pnpm-lock.yaml"
 
+      - name: Show secrets
+        run: |
+          echo ${{ secrets.PROD_ENV_FILE }}
       - name: Install Dependencies
         run: pnpm install
 
