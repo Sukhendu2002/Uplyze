@@ -24,13 +24,5 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'pnpm'
-    - name: Create .env file
-      run: |
-        touch server/.env
-        echo "ENV_VAR_1=${{ secrets.PROD_ENV_FILE }}" >> server/.env
-      working-directory: ./
 
-    - name: Install dependencies (server)
-      run: pnpm install
-      working-directory: ./server
 
