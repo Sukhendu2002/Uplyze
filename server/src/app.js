@@ -6,6 +6,10 @@ const mongoose = require("mongoose");
 const authRoutes = require("./routes/auth.routes");
 const websiteRoutes = require("./routes/websites.routes");
 const monitorRoutes = require("./routes/monitoring.routes");
+const fs = require("fs");
+const https = require("https");
+
+const file = fs.readFileSync("./1A7B9736FB60935BA43C094C6584283B.txt");
 
 const app = express();
 
@@ -22,6 +26,13 @@ app.get("/", (req, res) => {
     message: "Welcome to the server",
   });
 });
+
+app.get(
+  "/.well-known/pki-validation/1A7B9736FB60935BA43C094C6584283B.txt",
+  (req, res) => {
+    res.send(file);
+  }
+);
 
 app.listen(process.env.PORT, () => {
   try {
