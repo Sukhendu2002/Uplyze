@@ -47,7 +47,7 @@ app.listen(process.env.PORT, () => {
   }
 });
 
-const server = https.createServer({ key, cert }, app);
+// const server = https.createServer({ key, cert }, app);
 
 // server.listen(8443, () => {
 //   console.log("Server is running on port 8443");
