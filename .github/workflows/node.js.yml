@@ -31,7 +31,16 @@ jobs:
       - name: Install Dependencies
         run: pnpm install
 
-      # - name: Create .env file
-      #   run: |
-      #     touch .env
-      #     echo "${{ secrets.PROD_SEC }}" >> .env
+      - name: Create .env file
+        run: |
+          touch .env
+          echo "PORT=${{ secrets.PORT }}" >> .env
+          echo "DB_URI=${{ secrets.DB_URI }}" >> .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+          echo "SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }}" >> .env
+          echo "EMAIL_FROM=${{ secrets.EMAIL_FROM }}" >> .env
+          echo "CLIENT_URL=${{ secrets.CLIENT_URL }}" >> .env
+          echo "MAILERSEND_API_KEY=${{ secrets.MAILERSEND_API_KEY }}" >> .env
+          echo "SMTP_HOST=${{ secrets.SMTP_HOST }}" >> .env
+          echo "SMTP_USER=${{ secrets.SMTP_USER }}" >> .env
+          echo "SMTP_PASS=${{ secrets.SMTP_PASS }}" >> .env
