@@ -17,8 +17,10 @@ app.use("/api/auth", authRoutes);
 app.use("/api/websites", websiteRoutes);
 app.use("/api/monitoring", monitorRoutes);
 
-app.get("/api", (req, res) => {
-  res.send("Hello World");
+app.get("/", (req, res) => {
+  res.status(200).json({
+    message: "Welcome to the server",
+  });
 });
 
 app.listen(process.env.PORT, () => {
