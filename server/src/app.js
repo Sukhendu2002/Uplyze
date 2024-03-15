@@ -17,7 +17,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/websites", websiteRoutes);
 app.use("/api/monitoring", monitorRoutes);
 
-app.get("/", (req, res) => {
+app.get("/api", (req, res) => {
   res.send("Hello World");
 });
 

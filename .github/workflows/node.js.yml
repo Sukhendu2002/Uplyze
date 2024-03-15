@@ -31,7 +31,7 @@ jobs:
       - name: Install Dependencies
         run: pnpm install
 
-      - name: Create .env file
-        run: |
-          touch .env
-          echo "${{ secrets.PROD_SEC }}" >> .env
+      # - name: Create .env file
+      #   run: |
+      #     touch .env
+      #     echo "${{ secrets.PROD_SEC }}" >> .env
