@@ -10,6 +10,8 @@ const fs = require("fs");
 const https = require("https");
 
 const file = fs.readFileSync("./1A7B9736FB60935BA43C094C6584283B.txt");
+const key = fs.readFileSync("./private.key");
+const cert = fs.readFileSync("./certificate.crt");
 
 const app = express();
 
@@ -43,4 +45,10 @@ app.listen(process.env.PORT, () => {
   } catch (error) {
     console.log(error);
   }
+});
+
+const server = https.createServer({ key, cert }, app);
+
+server.listen(8443, () => {
+  console.log("Server is running on port 8443");
 });
