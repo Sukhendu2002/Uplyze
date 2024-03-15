@@ -45,22 +45,14 @@ const connectDB = async () => {
   }
 };
 
+connectDB();
+
 app.listen(process.env.PORT, () => {
-  try {
-    connectDB();
-    console.log(`Server is running on port ${process.env.PORT}`);
-  } catch (error) {
-    console.log(error);
-  }
+  console.log(`Server is running on port ${process.env.PORT}`);
 });
 
 const server = https.createServer({ key, cert }, app);
 
 server.listen(8443, () => {
-  try {
-    connectDB();
-    console.log("Server is running on port 8443");
-  } catch (error) {
-    console.log(error);
-  }
+  console.log("Server is running on port 8443");
 });
