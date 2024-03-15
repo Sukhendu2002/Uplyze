@@ -6,12 +6,12 @@ const mongoose = require("mongoose");
 const authRoutes = require("./routes/auth.routes");
 const websiteRoutes = require("./routes/websites.routes");
 const monitorRoutes = require("./routes/monitoring.routes");
-const fs = require("fs");
-const https = require("https");
+// const fs = require("fs");
+// const https = require("https");
 
 // const file = fs.readFileSync("./1A7B9736FB60935BA43C094C6584283B.txt");
-const key = fs.readFileSync("./private.key");
-const cert = fs.readFileSync("./certificate.crt");
+// const key = fs.readFileSync("./private.key");
+// const cert = fs.readFileSync("./certificate.crt");
 
 const app = express();
 
@@ -45,17 +45,22 @@ const connectDB = async () => {
   }
 };
 
-// app.listen(process.env.PORT, () => {
-//   console.log(`Server is running on port ${process.env.PORT}`);
-// });
-
-const server = https.createServer({ key, cert }, app);
-
-server.listen(8443, () => {
+app.listen(process.env.PORT, () => {
   try {
     connectDB();
-    console.log("Server is running on port 8443");
+    console.log(`Server is running on port ${process.env.PORT}`);
   } catch (error) {
     console.log(error);
   }
 });
+
+// const server = https.createServer({ key, cert }, app);
+
+// server.listen(8443, () => {
+//   try {
+//     connectDB();
+//     console.log("Server is running on port 8443");
+//   } catch (error) {
+//     console.log(error);
+//   }
+// });
