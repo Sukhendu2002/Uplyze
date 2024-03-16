@@ -144,6 +144,7 @@ const Dashboard: React.FC<AuthNavProps> = ({ onLogout }) => {
             _id: res.data.data._id,
             name: res.data.data.name,
             url: res.data.data.url,
+            monitoringHistory: [],
           },
         ]);
         //clear form
