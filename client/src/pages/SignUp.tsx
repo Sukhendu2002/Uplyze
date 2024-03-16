@@ -1,5 +1,5 @@
 import React from "react";
-import { Command, Loader2 } from "lucide-react";
+import {  Loader2 } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Link, useNavigate } from "react-router-dom";
