@@ -1,6 +1,7 @@
 const Website = require("../models/website.model");
 const checkSSL = require("../services/monitoring/ssl");
 const { getDomainInfo } = require("../services/monitoring/domain");
+const monitorWebsites = require("../services/monitoring.service");
 
 const createWebsite = async (req, res) => {
   const { name, url, monitoringSchedule, monitoringSettings, notifications } =
@@ -23,6 +24,8 @@ const createWebsite = async (req, res) => {
       notifications,
     });
     await website.save();
+    await monitorWebsites([website]);
+
     res.status(201).json({
       success: true,
       data: website,

@@ -14,7 +14,7 @@ const Landing = () => {
       <section className="space-y-4 pb-8 pt-2 md:pb-12 md:pt-10 lg:py-32">
         <div className="container flex max-w-[64rem] flex-col items-center gap-4 text-center">
           <Link
-            to="#"
+            to="https://twitter.com/Sukhendu_2002"
             className="rounded-2xl bg-muted px-4 py-1.5 text-sm font-medium"
             target="_blank"
           >
@@ -31,14 +31,14 @@ const Landing = () => {
             <Link to="/signup" className={cn(buttonVariants({ size: "lg" }))}>
               Get Started for Free
             </Link>
-            <a
+            {/* <a
               href="#"
               target="_blank"
               rel="noreferrer"
               className={cn(buttonVariants({ variant: "outline", size: "lg" }))}
             >
               GitHub
-            </a>
+            </a> */}
           </div>
         </div>
       </section>

@@ -190,6 +190,15 @@ const Dashboard: React.FC<AuthNavProps> = ({ onLogout }) => {
               id={site._id.toString()}
               name={site.name}
               url={site.url}
+              // uptime = last monitoringHistory.uptime
+              uptime={
+                site?.monitoringHistory[site?.monitoringHistory.length - 1]
+                  ?.uptime
+              }
+              responseTime={
+                site?.monitoringHistory[site?.monitoringHistory.length - 1]
+                  ?.responseTime
+              }
             />
           ))
         )}
@@ -300,6 +309,7 @@ const Dashboard: React.FC<AuthNavProps> = ({ onLogout }) => {
                     <Label htmlFor="performance">Performance</Label>
                     <Checkbox
                       id="performance"
+                      disabled
                       checked={monitoringCheck.performance}
                       onCheckedChange={() =>
                         setMonitoringCheck({

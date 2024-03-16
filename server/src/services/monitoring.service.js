@@ -39,7 +39,6 @@ const monitorWebsites = async (websites) => {
         responseTime = 0;
       }
     }
-
     if (website.info.ssl.valid === false) {
       const sslCheck = await checkSSL(website.url);
       ssl = sslCheck;
@@ -58,11 +57,10 @@ const monitorWebsites = async (websites) => {
     });
     website.info.ssl = ssl;
     await website.save();
-
     if (
       responseTime > website.monitoringSettings.alertThresholds.responseTime
     ) {
-      if (notifications.email) {
+      if (notifications?.email) {
         const user = await User.findById(website.owner);
         sendEmailAlert(
           user.email,
@@ -73,11 +71,7 @@ const monitorWebsites = async (websites) => {
             website.name
           } is slow. Response time: ${responseTime}ms</p>
           <p>Current time: ${new Date()}</p>
-          <p>
-            Unsubscribe from these notifications <a href="${
-              process.env.CLIENT_URL
-            }/unsubscribe/${user._id}">here</a>
-          </p>`
+          `
         );
         console.log(
           `Website ${website.name} is slow. Sending notifications to owner.`
@@ -92,11 +86,7 @@ const monitorWebsites = async (websites) => {
         ` <h1>Hello ${user.name}</h1>
         <p>Your website ${website.name} is down.</p>
         <p>Current time: ${new Date()}</p>
-        <p>
-          Unsubscribe from these notifications <a href="${
-            process.env.CLIENT_URL
-          }/unsubscribe/${user._id}">here</a>
-        </p>`
+        `
       );
       console.log(
         `Website ${website.name} is down. Sending notifications to owner.`

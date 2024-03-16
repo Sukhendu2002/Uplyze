@@ -13,9 +13,11 @@ interface CardProps {
   id: string;
   name: string;
   url: string;
+  uptime: number;
+  responseTime: number;
 }
 
-const SiteCard = ({ id, name, url }: CardProps) => {
+const SiteCard = ({ id, name, url, uptime, responseTime }: CardProps) => {
   return (
     <Card className="w-64 h-50">
       <CardHeader className="flex flex-col">
@@ -27,11 +29,11 @@ const SiteCard = ({ id, name, url }: CardProps) => {
       <CardContent>
         <div className="flex justify-between">
           <p>Uptime</p>
-          <p>100%</p>
+          <p>{uptime ? 100 : 0}%</p>
         </div>
         <div className="flex justify-between">
           <p>Response Time</p>
-          <p>0.2s</p>
+          <p>{responseTime}ms</p>
         </div>
       </CardContent>
       <CardFooter className="flex justify-end">
