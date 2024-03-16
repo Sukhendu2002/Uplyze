@@ -32,6 +32,10 @@ type Site = {
   _id: string;
   name: string;
   url: string;
+  monitoringHistory: {
+    uptime: number;
+    responseTime: number;
+  }[];
 };
 
 interface AuthNavProps {
