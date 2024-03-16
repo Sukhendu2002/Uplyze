@@ -20,7 +20,7 @@ const Landing = () => {
           >
             Follow along on Twitter
           </Link>
-          <h1 className="font-heading font-semibold text-3xl sm:text-5xl md:text-6xl lg:text-7xl">
+          <h1 className="font-heading font-bold text-3xl sm:text-5xl md:text-6xl lg:text-7xl">
             Keep Your Websites Up and Running with Uplyze
           </h1>
           <p className="max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8">
@@ -139,14 +139,14 @@ const Landing = () => {
             Sign up for our free trial and experience the power of proactive
             website monitoring and uptime tracking. Enjoy peace of mind and keep
             your websites running smoothly.
-            <a
-              href="#"
+            <Link
+              to="/signup"
               target="_blank"
               rel="noreferrer"
               className="underline underline-offset-4"
             >
               Start Free Trial
-            </a>
+            </Link>
             .{" "}
           </p>
         </div>
