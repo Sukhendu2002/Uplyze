@@ -16,9 +16,7 @@ const parseWhoisData = (rawWhoisData) => {
 };
 
 const getDomainInfo = async (inputUrl) => {
-  console.log(inputUrl);
   const parsedUrl = new URL(inputUrl);
-  console.log(parsedUrl);
   let domain = parsedUrl.hostname;
 
   domain = domain.replace("www.", "");
